@@ -1,8 +1,9 @@
-int NONE  = 0x00;
-int SQHOLE  = 0x01;
-int SQPIECE = 0x02;
-int CIRCHOLE  = 0x03;
-int CIRCPIECE = 0x04;
+int NONE       = 0x00;
+int SQHOLE     = 0x01;
+int SQPIECE    = 0x02;
+int CIRCHOLE   = 0x03;
+int CIRCPIECE  = 0x04;
+int SQPIECEROT = 0x05;
 
 int elementSize = 600;
 
@@ -70,9 +71,9 @@ void generateElement() {
         case 1: //BORDER
             board[1][0] = SQHOLE;
             if (random(1)<0.5) {
-                board[1][1] = SQPIECE;
+                board[1][1] = (random(1)<0.5) ? SQPIECE : SQPIECEROT;
             } else {
-                board[1][2] = SQPIECE;
+                board[1][2] = (random(1)<0.5) ? SQPIECE : SQPIECEROT;
             }
             break;
 
@@ -113,15 +114,15 @@ void generateElement() {
         }
     }
 
-    int rotNum = (int)random(0, 4);
-    while (rotNum > 0) {
-        board = rotateBoard(board);
-        rotNum--;
-    }
+    //int rotNum = (int)random(0, 4);
+    //while (rotNum > 0) {
+    //    board = rotateBoard(board);
+    //    rotNum--;
+    //}
 
-    if (random(1)>0.5) {
-        board = reflectBoard(board);
-    }
+    //if (random(1)>0.5) {
+    //    board = reflectBoard(board);
+    //}
 
 
     //Maybe move the painting code to another function.
@@ -132,7 +133,18 @@ void generateElement() {
 
     //Change coordinates
     pushMatrix();
-    translate((width-elementSize)/2, (width-elementSize)/2);
+    translate(width/2, width/2);
+
+    //Rotate canvas to avoid rotating the array
+    rotate (radians((int)random(0, 4)*90));
+
+    //Reflect the element
+    if (random(1)>0.5) {
+        scale(-1, 1);
+    }
+
+    //Recenter the element
+    translate(-elementSize/2, -elementSize/2);
 
     //Main square
     fill (colorPalette[backColorPointer]);
@@ -152,6 +164,16 @@ void generateElement() {
             } else if (board[x][y] == CIRCPIECE) {
                 fill(colorPalette[foreColorPointer]);
                 ellipse(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2, pieceSize * 0.8, pieceSize * 0.8);
+            } else if (board[x][y] == SQPIECEROT) {
+                fill(colorPalette[foreColorPointer]);
+                rectMode(CENTER);
+                pushMatrix();
+                translate(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2);
+                rotate(radians(45));
+                int mult = isCenter(x,y,gridSize) ? 1 : -1;
+                rect(mult*pieceSize*0.14142, mult*pieceSize*0.14142, pieceSize*0.85, pieceSize*0.85);
+                popMatrix();
+                rectMode(CORNER);
             }
         }
     }    
@@ -169,36 +191,35 @@ void generateElement() {
 //}
 
 
-//boolean isCenter(int x, int y, int gs) {
+boolean isCenter(int x, int y, int gs) {
+    return (x == (gs-1)/2 && y==x);
+}
 
-//    return (x == (gs-1)/2 && y==x);
+//int[][] rotateBoard(int[][] oldBoard) {
+
+//    int N = oldBoard.length;
+
+//    int[][] newBoard = new int[N][N];
+//    for (int r = 0; r < N; r++) {
+//        for (int c = 0; c < N; c++) {
+//            newBoard[c][N-1-r] = oldBoard[r][c];
+//        }
+//    }
+//    return newBoard;
 //}
 
-int[][] rotateBoard(int[][] oldBoard) {
+//int[][] reflectBoard(int[][] oldBoard) {
 
-    int N = oldBoard.length;
+//    int N = oldBoard.length;
 
-    int[][] newBoard = new int[N][N];
-    for (int r = 0; r < N; r++) {
-        for (int c = 0; c < N; c++) {
-            newBoard[c][N-1-r] = oldBoard[r][c];
-        }
-    }
-    return newBoard;
-}
-
-int[][] reflectBoard(int[][] oldBoard) {
-
-    int N = oldBoard.length;
-
-    int[][] newBoard = new int[N][N];
-    for (int r = 0; r < N; r++) {
-        for (int c = 0; c < N; c++) {
-            newBoard[N-1-c][r] = oldBoard[c][r];
-        }
-    }
-    return newBoard;
-}
+//    int[][] newBoard = new int[N][N];
+//    for (int r = 0; r < N; r++) {
+//        for (int c = 0; c < N; c++) {
+//            newBoard[N-1-c][r] = oldBoard[c][r];
+//        }
+//    }
+//    return newBoard;
+//}
 
 void draw() {
 
