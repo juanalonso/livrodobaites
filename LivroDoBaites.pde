@@ -19,7 +19,7 @@ color[] colorPalette = {
     color (125, 15, 15)  //Dark red
 };
 
-int[] gridSizes = {2, 3};
+int[] gridSizes = {2, 3, 4};
 
 
 void setup() {
@@ -45,6 +45,7 @@ void generateElement() {
     int gridSize = gridSizes[(int)random(gridSizes.length)];
     int[][] board = new int[gridSize][gridSize];
     //int px, py;
+    int pieceCase;
 
 
     //Get hole and superposition cells
@@ -59,7 +60,7 @@ void generateElement() {
 
     case 3:
 
-        int pieceCase = (int)random(0, 4);
+        pieceCase = (int)random(0, 4);
 
         switch (pieceCase) {
 
@@ -115,6 +116,74 @@ void generateElement() {
             board[1][0] = CIRCPIECE;
             break;
         }
+        
+        break;
+
+    case 4:
+
+        pieceCase = (int)random(0, 8);
+
+        switch (pieceCase) {
+
+        case 0: //TWO CORNERS, SYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
+            board[0][1] = SQPIECE;
+            board[3][1] = SQPIECE;
+            break;
+
+        case 1: //TWO SIDES, SYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[0][2] = SQPIECE;
+            board[3][2] = SQPIECE;
+            break;
+
+        case 2: //TWO SIDES, ASYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[1][1] = SQPIECE;
+            board[2][2] = SQPIECE;
+            break;
+
+        case 3: //TWO CORNERS, ASYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
+            board[0][1] = SQPIECE;
+            board[3][3] = SQPIECE;
+            break;
+            
+        case 4: //TWO CORNERS, ASYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
+            board[0][3] = SQPIECE;
+            board[3][3] = SQPIECE;
+            break;
+            
+        case 5: //TWO CORNERS, ASYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
+            board[0][2] = SQPIECE;
+            board[3][2] = SQPIECE;
+            break;
+            
+        case 6: //TWO CORNERS, ASYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[0][3] = SQPIECE;
+            board[3][3] = SQPIECE;
+            break;
+                        
+        case 7: //TWO CORNERS, ASYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[1][1] = SQPIECE;
+            board[2][1] = SQPIECE;
+            break;
+
+        }
+
+        break;
     }
 
     //int rotNum = (int)random(0, 4);
@@ -139,11 +208,11 @@ void generateElement() {
     translate(width/2, width/2);
 
     //Rotate canvas to avoid rotating the array
-    //rotate (radians((int)random(0, 4)*90));
+    rotate (radians((int)random(0, 4)*90));
 
     //Reflect the element
     if (random(1)>0.5) {
-        //    scale(-1, 1);
+        scale(-1, 1);
     }
 
     //Recenter the element
@@ -168,20 +237,12 @@ void generateElement() {
                 fill(colorPalette[foreColorPointer]);
                 ellipse(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2, pieceSize * 0.8, pieceSize * 0.8);
             } else if (board[x][y] == SQPIECEROT) {
-                int mult;
-                if (isCenter(x, y, gridSize)) {
-                    mult = 1;
-                } else if (isCorner(x, y, gridSize)) {
-                    mult = 1;
-                } else {
-                    mult = -1;
-                }
                 fill(colorPalette[foreColorPointer]);
                 rectMode(CENTER);
                 pushMatrix();
                 translate(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2);
                 rotate(radians(45));
-                rect(0, 0, pieceSize, pieceSize);
+                rect(0, 0, pieceSize * 0.7, pieceSize * 0.7);
                 popMatrix();
                 rectMode(CORNER);
             }
