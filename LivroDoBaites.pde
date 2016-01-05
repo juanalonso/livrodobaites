@@ -79,7 +79,7 @@ void generateElement() {
 
         case 2: //CORNER
             board[0][0] = SQHOLE;
-            int cornerCase = (int) random(0, 5);
+            int cornerCase = (int) random(0, 6);
 
             switch(cornerCase) {
             case 0:
@@ -104,6 +104,9 @@ void generateElement() {
                 board[0][1] = SQHOLE;
                 board[2][1] = SQPIECE;
                 board[2][2] = SQPIECE;                
+                break;
+            case 5:
+                board[2][0] = SQPIECEROT;                
                 break;
             }
             break;
@@ -136,11 +139,11 @@ void generateElement() {
     translate(width/2, width/2);
 
     //Rotate canvas to avoid rotating the array
-    rotate (radians((int)random(0, 4)*90));
+    //rotate (radians((int)random(0, 4)*90));
 
     //Reflect the element
     if (random(1)>0.5) {
-        scale(-1, 1);
+        //    scale(-1, 1);
     }
 
     //Recenter the element
@@ -165,13 +168,20 @@ void generateElement() {
                 fill(colorPalette[foreColorPointer]);
                 ellipse(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2, pieceSize * 0.8, pieceSize * 0.8);
             } else if (board[x][y] == SQPIECEROT) {
+                int mult;
+                if (isCenter(x, y, gridSize)) {
+                    mult = 1;
+                } else if (isCorner(x, y, gridSize)) {
+                    mult = 1;
+                } else {
+                    mult = -1;
+                }
                 fill(colorPalette[foreColorPointer]);
                 rectMode(CENTER);
                 pushMatrix();
                 translate(x * pieceSize + pieceSize/2, y * pieceSize + pieceSize/2);
                 rotate(radians(45));
-                int mult = isCenter(x,y,gridSize) ? 1 : -1;
-                rect(mult*pieceSize*0.14142, mult*pieceSize*0.14142, pieceSize*0.85, pieceSize*0.85);
+                rect(0, 0, pieceSize, pieceSize);
                 popMatrix();
                 rectMode(CORNER);
             }
@@ -182,18 +192,18 @@ void generateElement() {
 }
 
 
-//boolean isCorner(int x, int y, int gs) {
-
-//    return (x==0 && y==x) ||
-//        (x==0 && y==gs-1) ||
-//        (x==gs-1 && y==x) ||
-//        (x==gs-1 && y==0);
-//}
+boolean isCorner(int x, int y, int gs) {
+    return (x==0 && y==x) ||
+        (x==0 && y==gs-1) ||
+        (x==gs-1 && y==x) ||
+        (x==gs-1 && y==0);
+}
 
 
 boolean isCenter(int x, int y, int gs) {
     return (x == (gs-1)/2 && y==x);
 }
+
 
 //int[][] rotateBoard(int[][] oldBoard) {
 
