@@ -46,6 +46,7 @@ void generateElement() {
     int[][] board = new int[gridSize][gridSize];
     //int px, py;
     int pieceCase;
+    boolean rotateElement = false, reflectElement = false;
 
 
     //Get hole and superposition cells
@@ -53,7 +54,7 @@ void generateElement() {
 
     case 2:
 
-        //px = py = 0;
+        reflectElement = true;
         board[0][0] = SQHOLE;
         board[1][(int)random(0, 2)] = SQPIECE;
         break;
@@ -65,58 +66,75 @@ void generateElement() {
         switch (pieceCase) {
 
         case 0: //CENTER
+
             board[1][1] = SQHOLE;
-            board[1][0] = SQPIECE;
+            board[1][2] = SQPIECE;
             break;
 
         case 1: //BORDER
+
             board[1][0] = SQHOLE;
-            if (random(1)<0.5) {
+            switch ((int)random(3)) {
+            case 0:
                 board[1][1] = (random(1)<0.5) ? SQPIECE : SQPIECEROT;
-            } else {
+                break;
+            case 1:
                 board[1][2] = (random(1)<0.5) ? SQPIECE : SQPIECEROT;
+                break;
+            case 2:
+                board[0][0] = SQPIECE;
             }
             break;
 
         case 2: //CORNER
-            board[0][0] = SQHOLE;
+
             int cornerCase = (int) random(0, 6);
 
             switch(cornerCase) {
             case 0:
+                //TODO: diagonal simmetry
+                board[0][0] = SQHOLE;
                 board[1][0] = SQPIECE;
                 break;
             case 1:
-                board[0][2] = SQHOLE;
-                board[1][0] = SQPIECE;
-                board[1][2] = SQPIECE;
+                board[0][0] = SQHOLE;
+                board[2][0] = SQHOLE;
+                board[0][1] = SQPIECE;
+                board[2][1] = SQPIECE;
                 break;
             case 2:
+                board[0][0] = SQHOLE;
                 board[2][2] = SQHOLE;
                 board[2][0] = SQPIECE;
                 board[0][2] = SQPIECE;                
                 break;
             case 3:
+                rotateElement = true;
+                reflectElement = true;            
+                board[0][0] = SQHOLE;
                 board[2][2] = SQHOLE;
                 board[2][1] = SQPIECE;
                 board[0][1] = SQPIECE;                
                 break;
             case 4:
+                reflectElement = true;            
+                board[0][0] = SQHOLE;
                 board[0][1] = SQHOLE;
                 board[2][1] = SQPIECE;
                 board[2][2] = SQPIECE;                
                 break;
             case 5:
+                board[0][0] = SQHOLE;
                 board[2][0] = SQPIECEROT;                
                 break;
             }
             break;
         case 3:
             board[1][1] = CIRCHOLE;
-            board[1][0] = CIRCPIECE;
+            board[1][2] = CIRCPIECE;
             break;
         }
-        
+
         break;
 
     case 4:
@@ -132,55 +150,56 @@ void generateElement() {
             board[3][1] = SQPIECE;
             break;
 
-        case 1: //TWO SIDES, SYM
-            board[0][1] = SQHOLE;
-            board[3][1] = SQHOLE;
+        case 1: //TWO CORNERS, SYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
             board[0][2] = SQPIECE;
             board[3][2] = SQPIECE;
             break;
 
-        case 2: //TWO SIDES, ASYM
-            board[0][1] = SQHOLE;
-            board[3][1] = SQHOLE;
-            board[1][1] = SQPIECE;
-            board[2][2] = SQPIECE;
+        case 2: //TWO CORNERS, SYM
+            board[0][0] = SQHOLE;
+            board[3][0] = SQHOLE;
+            board[0][3] = SQPIECE;
+            board[3][3] = SQPIECE;
             break;
 
         case 3: //TWO CORNERS, ASYM
+            reflectElement = false;
             board[0][0] = SQHOLE;
             board[3][0] = SQHOLE;
             board[0][1] = SQPIECE;
             board[3][3] = SQPIECE;
             break;
-            
-        case 4: //TWO CORNERS, ASYM
-            board[0][0] = SQHOLE;
-            board[3][0] = SQHOLE;
-            board[0][3] = SQPIECE;
-            board[3][3] = SQPIECE;
-            break;
-            
-        case 5: //TWO CORNERS, ASYM
-            board[0][0] = SQHOLE;
-            board[3][0] = SQHOLE;
-            board[0][2] = SQPIECE;
-            board[3][2] = SQPIECE;
-            break;
-            
-        case 6: //TWO CORNERS, ASYM
-            board[0][1] = SQHOLE;
-            board[3][1] = SQHOLE;
-            board[0][3] = SQPIECE;
-            board[3][3] = SQPIECE;
-            break;
-                        
-        case 7: //TWO CORNERS, ASYM
+
+        case 4: //TWO SIDES, SYM
             board[0][1] = SQHOLE;
             board[3][1] = SQHOLE;
             board[1][1] = SQPIECE;
             board[2][1] = SQPIECE;
             break;
 
+        case 5: //TWO SIDES, SYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[0][2] = SQPIECE;
+            board[3][2] = SQPIECE;
+            break;            
+
+        case 6: //TWO SIDES, SYM
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[0][3] = SQPIECE;
+            board[3][3] = SQPIECE;
+            break;
+
+        case 7: //TWO SIDES, ASYM
+            reflectElement = true;
+            board[0][1] = SQHOLE;
+            board[3][1] = SQHOLE;
+            board[1][1] = SQPIECE;
+            board[2][2] = SQPIECE;
+            break;
         }
 
         break;
@@ -208,10 +227,12 @@ void generateElement() {
     translate(width/2, width/2);
 
     //Rotate canvas to avoid rotating the array
-    rotate (radians((int)random(0, 4)*90));
+    if (rotateElement) {
+        rotate (radians((int)random(0, 4)*90));
+    }
 
     //Reflect the element
-    if (random(1)>0.5) {
+    if (reflectElement && random(1)>0.5) {
         scale(-1, 1);
     }
 
